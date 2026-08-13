@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* Design system — dark, calm, numbers-first (see design brief §6). */
+/* Palette values verified against docs/Portfolio Dashboard (Standalone).html
+   by reading the mockup's computed styles. */
+@theme {
+  --color-bg: #0f1218;
+  --color-card: #171b24;
+  --color-row: #1f2531;
+  --color-border: #262e3a;
+  --color-border-soft: #1e2430;
+  --color-text: #f4f6fa;
+  --color-dim: #8a93a5;
+  --color-faint: #6b7488;
+  --color-gold: #e0a458; /* primary accent */
+  --color-teal: #5aa98c; /* gains / market-value line */
+  --color-loss: #d9534f; /* losses & warnings only */
+
+  /* One stack for all text (matches the mockup): Space Grotesk for Latin,
+     IBM Plex Sans Thai as the Thai fallback. Numbers use the mono stack. */
+  --font-display: var(--font-space-grotesk), var(--font-plex-thai);
+  --font-sans: var(--font-space-grotesk), var(--font-plex-thai);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  color-scheme: dark;
+}
+
+/* Tailwind v4 no longer sets this on buttons — restore the pointer for anything
+   clickable. */
+button:not(:disabled),
+[role="button"],
+a[href],
+label:has(input[type="color"]),
+summary {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Monospaced, tabular figures so columns of baht amounts align. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.disp {
+  font-family: var(--font-display);
+}

@@ -1,0 +1,16 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "Default": "Host=localhost;Port=5435;Database=portfolio;Username=portfolio;Password=portfolio"
+  },
+  "Auth": {
+    "__comment": "Generate a hash with:  dotnet run --no-build -- hash \"your-password\"  (use --no-build if the API is running). Then paste it below and set your username.",
+    "Username": "changeme",
+    "PasswordHash": "PASTE_HASH_HERE"
+  }
+}

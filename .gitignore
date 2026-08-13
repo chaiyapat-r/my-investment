@@ -1,0 +1,36 @@
+# .NET
+backend/bin/
+backend/obj/
+backend.Tests/bin/
+backend.Tests/obj/
+
+# Visual Studio
+.vs/
+*.user
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Secrets / env
+*.env
+.env
+.env.local
+.env.*.local
+
+# Local & production secrets — never commit real credentials.
+# appsettings.Development.json holds the local DB connection + Auth password hash,
+# so it stays out of git. Copy appsettings.Development.json.example to set it up.
+appsettings.Development.json
+backend/appsettings.Development.json
+appsettings.Production.json
+backend/appsettings.Production.json
+
+# OS
+.DS_Store
+Thumbs.db
