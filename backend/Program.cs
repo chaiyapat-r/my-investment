@@ -85,18 +85,23 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Seed the single user from configuration if the DB is reachable.
+// Apply pending EF migrations, then seed the single user + accounts. Running
+// migrations on startup means a fresh deploy (e.g. a new Supabase database)
+// builds its schema automatically — no manual `dotnet ef database update` step.
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var sp = scope.ServiceProvider;
+        await sp.GetRequiredService<AppDbContext>().Database.MigrateAsync();
         await sp.GetRequiredService<IAuthService>().EnsureSeedUserAsync();
         await sp.GetRequiredService<IAccountService>().EnsureSeededAsync();
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Seeding skipped (database not reachable at startup).");
+        // Logged (not thrown) so a transient DB outage at boot doesn't crash-loop
+        // the container. If the schema is missing, this is the first log to check.
+        app.Logger.LogError(ex, "Startup migration/seeding failed (database unreachable or migration error).");
     }
 }
 
