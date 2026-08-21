@@ -81,7 +81,7 @@ export function WeeklyEntryModal({
       width={560}
       onClose={onClose}
     >
-      <div className="mb-4 grid grid-cols-2 gap-3">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1 block text-xs text-dim">วันที่</span>
           <input

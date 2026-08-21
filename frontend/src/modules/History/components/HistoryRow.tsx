@@ -62,8 +62,8 @@ export function HistoryRow({
       </td>
       <td className="px-4 py-3">
         <div
-          className={`flex gap-0.5 transition-opacity group-hover:opacity-100 ${
-            deleting ? "opacity-100" : "opacity-0"
+          className={`flex gap-0.5 transition-opacity ${
+            deleting ? "opacity-100" : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
           }`}
         >
           <button

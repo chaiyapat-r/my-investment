@@ -37,10 +37,10 @@ export function AccountCard({
         selected ? "border-gold" : "border-border"
       }`}
     >
-      {/* edit / delete — revealed on hover */}
+      {/* edit / delete — always visible on touch (< lg), hover-revealed on desktop */}
       <div
-        className={`absolute right-2 top-2 flex gap-0.5 transition-opacity group-hover:opacity-100 ${
-          deleting ? "opacity-100" : "opacity-0"
+        className={`absolute right-2 top-2 flex gap-0.5 transition-opacity ${
+          deleting ? "opacity-100" : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
         }`}
       >
         <button
