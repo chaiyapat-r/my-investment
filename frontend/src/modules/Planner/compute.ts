@@ -12,6 +12,8 @@ export const money = (x: number) =>
   x.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const sh = (x: number) =>
   x.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+// Percentages show 2 decimals, no thousands separators needed.
+export const pct = (x: number) => x.toFixed(2);
 
 export function toUI(p: EntryPlan): UIPlan {
   return {
@@ -57,7 +59,12 @@ export function compute(plan: UIPlan): PlanComputation {
     const gain = t.tp.trim() !== "" ? t._qty * (n(t.tp) - t._price) : null;
     if (loss !== null) slTot += loss;
     if (gain !== null) tpTot += gain;
-    return { ...t, cost, runAvg: cq ? cc / cq : 0, loss, gain };
+    // Per-tranche % move from entry to SL/TP (independent of quantity).
+    const lossPct =
+      loss !== null && t._price > 0 ? ((t._price - n(t.sl)) / t._price) * 100 : null;
+    const gainPct =
+      gain !== null && t._price > 0 ? ((n(t.tp) - t._price) / t._price) * 100 : null;
+    return { ...t, cost, runAvg: cq ? cc / cq : 0, loss, gain, lossPct, gainPct };
   });
 
   return {
@@ -71,6 +78,9 @@ export function compute(plan: UIPlan): PlanComputation {
     hasFilled: fq > 0,
     slTot,
     tpTot,
+    // Totals as a % of the whole ladder's planned cost.
+    slPct: cc > 0 ? (slTot / cc) * 100 : 0,
+    tpPct: cc > 0 ? (tpTot / cc) * 100 : 0,
     rr: slTot > 0 ? tpTot / slTot : 0,
   };
 }

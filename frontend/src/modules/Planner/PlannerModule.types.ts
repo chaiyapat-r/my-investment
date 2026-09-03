@@ -28,6 +28,8 @@ export interface ComputedTranche extends UITranche {
   runAvg: number;
   loss: number | null; // qty × (price − SL); null when SL unset
   gain: number | null; // qty × (TP − price); null when TP unset
+  lossPct: number | null; // (price − SL) / price × 100; null when SL unset
+  gainPct: number | null; // (TP − price) / price × 100; null when TP unset
 }
 
 export interface PlanComputation {
@@ -41,5 +43,7 @@ export interface PlanComputation {
   hasFilled: boolean;
   slTot: number;
   tpTot: number;
+  slPct: number; // slTot as % of total planned cost
+  tpPct: number; // tpTot as % of total planned cost
   rr: number; // reward-to-risk over all tranches
 }

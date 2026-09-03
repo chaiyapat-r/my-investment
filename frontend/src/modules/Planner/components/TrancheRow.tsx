@@ -2,7 +2,7 @@
 
 import { Check, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
-import { money } from "../compute";
+import { money, pct } from "../compute";
 import type { ComputedTranche, TrancheField as TField } from "../PlannerModule.types";
 import { TrancheField } from "./TrancheField";
 
@@ -65,6 +65,11 @@ export function TrancheRow({
               <div className="text-[10px] text-faint">ขาดทุนถ้าโดน</div>
               <div className={`num text-sm ${t.loss !== null ? "text-loss" : "text-faint"}`}>
                 {t.loss !== null ? `−${cur}${money(Math.max(t.loss, 0))}` : "—"}
+                {t.lossPct !== null && (
+                  <span className="ml-1 text-[11px] text-loss">
+                    (−{pct(Math.max(t.lossPct, 0))}%)
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -78,6 +83,11 @@ export function TrancheRow({
               <div className="text-[10px] text-faint">กำไรถ้าโดน</div>
               <div className={`num text-sm ${t.gain !== null ? "text-teal" : "text-faint"}`}>
                 {t.gain !== null ? `+${cur}${money(Math.max(t.gain, 0))}` : "—"}
+                {t.gainPct !== null && (
+                  <span className="ml-1 text-[11px] text-teal">
+                    (+{pct(Math.max(t.gainPct, 0))}%)
+                  </span>
+                )}
               </div>
             </div>
           </div>
