@@ -32,7 +32,10 @@ public class AuthController(IAuthService auth) : ControllerBase
         return Ok(new { username = user.Username });
     }
 
-    [Authorize]
+    // Anonymous on purpose: a client with an expired/undecryptable cookie must
+    // still be able to clear it. SignOut emits the delete-cookie header
+    // regardless of whether the current request is authenticated.
+    [AllowAnonymous]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
