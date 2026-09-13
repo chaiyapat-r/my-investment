@@ -71,33 +71,46 @@ export function usePlanner() {
   }
 
   // --- tranche-level ---
+  // New rungs start empty — no guessed price/budget/qty. The row is created
+  // with zeros server-side (to get an id) but shows blank fields to fill in.
   async function addTranche(pid: number) {
-    const plan = plans.find((p) => p.id === pid);
-    if (!plan) return;
-    const lowest = [...plan.tranches].sort((a, b) => n(a.price) - n(b.price))[0];
-    const price = lowest ? n(lowest.price) * 0.9 : 100;
-    const budget = lowest ? n(lowest.budget) : 500;
-    const qty = price > 0 ? budget / price : 0;
+    if (!plans.some((p) => p.id === pid)) return;
     try {
       const created = await apiFetch<PlanTranche>(`/entry-plans/${pid}/tranches`, {
         method: "POST",
-        body: JSON.stringify({ price, budget, quantity: qty, filled: false, slPrice: null, tpPrice: null }),
+        body: JSON.stringify({ price: 0, budget: 0, quantity: 0, filled: false, slPrice: null, tpPrice: null }),
       });
       updateLocal(pid, (p) => ({
         ...p,
         tranches: [
           ...p.tranches,
-          {
-            id: created.id,
-            price: trim(created.price),
-            budget: trim(created.budget),
-            qty: trim(created.quantity),
-            sl: created.slPrice != null ? trim(created.slPrice) : "",
-            tp: created.tpPrice != null ? trim(created.tpPrice) : "",
-            filled: created.filled,
-          },
+          { id: created.id, price: "", budget: "", qty: "", sl: "", tp: "", filled: created.filled },
         ],
       }));
+    } catch {
+      load();
+    }
+  }
+
+  // Move a rung one position up/down. Optimistically swap locally, then persist;
+  // resync on failure.
+  async function moveTranche(pid: number, tid: number, direction: "up" | "down") {
+    const plan = plans.find((p) => p.id === pid);
+    if (!plan) return;
+    const i = plan.tranches.findIndex((t) => t.id === tid);
+    const j = direction === "up" ? i - 1 : i + 1;
+    if (i < 0 || j < 0 || j >= plan.tranches.length) return;
+
+    updateLocal(pid, (p) => {
+      const next = [...p.tranches];
+      [next[i], next[j]] = [next[j], next[i]];
+      return { ...p, tranches: next };
+    });
+    try {
+      await apiFetch(`/entry-plans/${pid}/tranches/${tid}/move`, {
+        method: "POST",
+        body: JSON.stringify({ direction }),
+      });
     } catch {
       load();
     }
@@ -182,5 +195,6 @@ export function usePlanner() {
     persistTranche,
     toggleFilled,
     deleteTranche,
+    moveTranche,
   };
 }

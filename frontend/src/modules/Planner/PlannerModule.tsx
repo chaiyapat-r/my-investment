@@ -58,6 +58,7 @@ export function PlannerModule() {
                   onCommitTranche={(tid) => p.persistTranche(plan.id, tid)}
                   onToggleFilled={(tid) => p.toggleFilled(plan.id, tid)}
                   onDeleteTranche={(tid) => p.deleteTranche(plan.id, tid)}
+                  onMoveTranche={(tid, dir) => p.moveTranche(plan.id, tid, dir)}
                   onDeletePlan={() => p.deletePlan(plan.id, plan.symbol)}
                   deletingPlan={p.deletingPlanId === plan.id}
                   deletingTrancheId={p.deletingTrancheId}

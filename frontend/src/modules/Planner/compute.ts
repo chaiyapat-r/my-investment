@@ -34,11 +34,10 @@ export function toUI(p: EntryPlan): UIPlan {
   };
 }
 
-// Weighted average accumulated price-descending — the ladder order.
+// Weighted average accumulated in the ladder's manual order (as the user
+// arranged the rungs), not sorted by price.
 export function compute(plan: UIPlan): PlanComputation {
-  const rows = plan.tranches
-    .map((t) => ({ ...t, _price: n(t.price), _qty: n(t.qty) }))
-    .sort((a, b) => b._price - a._price);
+  const rows = plan.tranches.map((t) => ({ ...t, _price: n(t.price), _qty: n(t.qty) }));
 
   let cq = 0,
     cc = 0,

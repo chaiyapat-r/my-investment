@@ -237,6 +237,7 @@ Relationship: one `EntryPlan` has many `PlanTranche` (cascade delete).
 |---|---|---|
 | `Id` | int PK | |
 | `PlanId` | int FK → EntryPlan | `ON DELETE CASCADE` |
+| `DisplayOrder` | int | manual ladder position; user reorders with up/down arrows |
 | `Price` | decimal(18,8) | the price this tranche targets |
 | `Budget` | decimal(18,8) | **primary input** |
 | `Quantity` | decimal(18,8) | derived (`Budget / Price`), user-editable |
@@ -251,8 +252,9 @@ Relationship: one `EntryPlan` has many `PlanTranche` (cascade delete).
 - `Budget` is primary; `Quantity = Budget / Price`. **Both stay editable and
   update each other:** editing quantity recalculates budget; editing budget or
   **price** holds the budget and recalculates quantity.
-- Tranches display sorted by **price descending**; the running average
-  accumulates in that same order.
+- Tranches display in a **manual order** (`DisplayOrder`) the user arranges with
+  up/down arrows — not sorted by price; the running average accumulates in that
+  displayed order. New rungs append at the bottom and start empty.
 - Weighted average: `Σ(Price × Quantity) / Σ(Quantity)`.
 - Two headline figures, always shown together:
   - **Cost so far** — average over tranches where `Filled = true`.

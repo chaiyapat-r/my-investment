@@ -16,21 +16,22 @@ public interface IEntryPlanService
     Task<PlanTranche?> AddTrancheAsync(int planId, TrancheCreateRequest req);
     Task<PlanTranche?> UpdateTrancheAsync(int planId, int trancheId, TrancheUpdateRequest req);
     Task<bool> DeleteTrancheAsync(int planId, int trancheId);
+    Task<bool> MoveTrancheAsync(int planId, int trancheId, string direction);
 }
 
 public class EntryPlanService(AppDbContext db) : IEntryPlanService
 {
-    // Tranches sorted price-descending to match the ladder display.
+    // Tranches sorted by the user's manual ladder order (DisplayOrder, then Id).
     public Task<List<EntryPlan>> GetAllAsync() =>
         db.EntryPlans
-            .Include(p => p.Tranches.OrderByDescending(t => t.Price))
+            .Include(p => p.Tranches.OrderBy(t => t.DisplayOrder).ThenBy(t => t.Id))
             .OrderByDescending(p => p.PlanDate)
             .ThenByDescending(p => p.Id) // newest plan first on same date
             .ToListAsync();
 
     public Task<EntryPlan?> GetAsync(int id) =>
         db.EntryPlans
-            .Include(p => p.Tranches.OrderByDescending(t => t.Price))
+            .Include(p => p.Tranches.OrderBy(t => t.DisplayOrder).ThenBy(t => t.Id))
             .FirstOrDefaultAsync(p => p.Id == id);
 
     public async Task<EntryPlan> CreateAsync(EntryPlanCreateRequest req)
@@ -79,9 +80,16 @@ public class EntryPlanService(AppDbContext db) : IEntryPlanService
         if (!await db.EntryPlans.AnyAsync(p => p.Id == planId))
             return null;
 
+        // Append to the bottom of the ladder.
+        var maxOrder = await db.PlanTranches
+            .Where(t => t.PlanId == planId)
+            .Select(t => (int?)t.DisplayOrder)
+            .MaxAsync() ?? -1;
+
         var tranche = new PlanTranche
         {
             PlanId = planId,
+            DisplayOrder = maxOrder + 1,
             Price = req.Price,
             Budget = req.Budget,
             Quantity = req.Quantity,
@@ -119,6 +127,30 @@ public class EntryPlanService(AppDbContext db) : IEntryPlanService
             return false;
 
         db.PlanTranches.Remove(tranche);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> MoveTrancheAsync(int planId, int trancheId, string direction)
+    {
+        var up = direction.Equals("up", StringComparison.OrdinalIgnoreCase);
+        var tranches = await db.PlanTranches
+            .Where(t => t.PlanId == planId)
+            .OrderBy(t => t.DisplayOrder).ThenBy(t => t.Id)
+            .ToListAsync();
+
+        var i = tranches.FindIndex(t => t.Id == trancheId);
+        if (i < 0)
+            return false;
+
+        var j = up ? i - 1 : i + 1;
+        if (j < 0 || j >= tranches.Count)
+            return false; // already at the top/bottom — nothing to do
+
+        // Swap the two neighbours' positions. (DisplayOrder values may have gaps;
+        // swapping the actual values keeps the order well-defined regardless.)
+        (tranches[i].DisplayOrder, tranches[j].DisplayOrder) =
+            (tranches[j].DisplayOrder, tranches[i].DisplayOrder);
         await db.SaveChangesAsync();
         return true;
     }

@@ -162,6 +162,7 @@ EntryPlan
 
 PlanTranche
   Id, PlanId
+  DisplayOrder      int — manual ladder position; user reorders with up/down arrows
   Price             decimal
   Budget            decimal — PRIMARY input
   Quantity          decimal — derived, but user-editable
@@ -175,8 +176,10 @@ PlanTranche
   remain editable and update each other:** editing quantity recalculates
   budget; editing budget or **price** holds the budget and recalculates
   quantity.
-- Tranches display sorted by **price descending**. Running average is
-  accumulated in that same order.
+- Tranches display in a **manual order** the user arranges with up/down arrows
+  (persisted as `DisplayOrder`), not sorted by price. Running average is
+  accumulated in that displayed order. New rungs append at the bottom and start
+  **empty** — no guessed price/budget/quantity.
 - Weighted average: `Σ(Price × Quantity) / Σ(Quantity)`
 - Two headline figures, always shown together:
   - **Cost so far** — average over tranches where `Filled = true`

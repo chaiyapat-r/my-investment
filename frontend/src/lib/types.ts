@@ -72,6 +72,7 @@ export type PlanStatus = "Active" | "Completed" | "Abandoned";
 export interface PlanTranche {
   id: number;
   planId: number;
+  displayOrder: number;
   price: number;
   budget: number;
   quantity: number;

@@ -48,4 +48,8 @@ public class EntryPlansController(IEntryPlanService plans) : ControllerBase
     [HttpDelete("{planId:int}/tranches/{trancheId:int}")]
     public async Task<IActionResult> DeleteTranche(int planId, int trancheId) =>
         await plans.DeleteTrancheAsync(planId, trancheId) ? NoContent() : NotFound();
+
+    [HttpPost("{planId:int}/tranches/{trancheId:int}/move")]
+    public async Task<IActionResult> MoveTranche(int planId, int trancheId, [FromBody] TrancheMoveRequest req) =>
+        await plans.MoveTrancheAsync(planId, trancheId, req.Direction) ? NoContent() : NotFound();
 }

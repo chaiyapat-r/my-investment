@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Trash2 } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { money, pct } from "../compute";
 import type { ComputedTranche, TrancheField as TField } from "../PlannerModule.types";
@@ -14,19 +14,27 @@ export function TrancheRow({
   index,
   cur,
   deleting,
+  isFirst,
+  isLast,
   onEdit,
   onCommit,
   onToggle,
   onDelete,
+  onMoveUp,
+  onMoveDown,
 }: {
   t: ComputedTranche;
   index: number;
   cur: string;
   deleting: boolean;
+  isFirst: boolean;
+  isLast: boolean;
   onEdit: (key: TField, value: string) => void;
   onCommit: () => void;
   onToggle: () => void;
   onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border-soft bg-[#141821] px-3 py-2.5">
@@ -92,6 +100,26 @@ export function TrancheRow({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* reorder — up/down, right */}
+      <div className="flex shrink-0 flex-col">
+        <button
+          onClick={onMoveUp}
+          disabled={isFirst}
+          className="flex h-5 w-6 items-center justify-center rounded text-faint transition-colors hover:text-text disabled:opacity-25 disabled:hover:text-faint"
+          aria-label="เลื่อนไม้ขึ้น"
+        >
+          <ChevronUp size={16} />
+        </button>
+        <button
+          onClick={onMoveDown}
+          disabled={isLast}
+          className="flex h-5 w-6 items-center justify-center rounded text-faint transition-colors hover:text-text disabled:opacity-25 disabled:hover:text-faint"
+          aria-label="เลื่อนไม้ลง"
+        >
+          <ChevronDown size={16} />
+        </button>
       </div>
 
       {/* delete — right, vertically centered */}

@@ -11,6 +11,10 @@ public class PlanTranche
     public int PlanId { get; set; }
     public EntryPlan? Plan { get; set; }
 
+    // Manual ladder position (ascending). The user reorders rungs with up/down
+    // arrows; the ladder is displayed and averaged in this order, not by price.
+    public int DisplayOrder { get; set; }
+
     public decimal Price { get; set; }
     public decimal Budget { get; set; }
     public decimal Quantity { get; set; }

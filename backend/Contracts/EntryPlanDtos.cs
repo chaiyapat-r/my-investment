@@ -15,3 +15,6 @@ public record TrancheCreateRequest(
 public record TrancheUpdateRequest(
     decimal Price, decimal Budget, decimal Quantity, bool Filled,
     decimal? SlPrice, decimal? TpPrice);
+
+// Move a tranche one position within its plan. Direction is "up" or "down".
+public record TrancheMoveRequest(string Direction);

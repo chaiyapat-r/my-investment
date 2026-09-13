@@ -16,6 +16,7 @@ export function PlanCard({
   onCommitTranche,
   onToggleFilled,
   onDeleteTranche,
+  onMoveTranche,
   onDeletePlan,
   deletingPlan,
   deletingTrancheId,
@@ -26,6 +27,7 @@ export function PlanCard({
   onCommitTranche: (tid: number) => void;
   onToggleFilled: (tid: number) => void;
   onDeleteTranche: (tid: number) => void;
+  onMoveTranche: (tid: number, direction: "up" | "down") => void;
   onDeletePlan: () => void;
   deletingPlan: boolean;
   deletingTrancheId: number | null;
@@ -89,10 +91,14 @@ export function PlanCard({
                 index={i}
                 cur={cur}
                 deleting={deletingTrancheId === t.id}
+                isFirst={i === 0}
+                isLast={i === c.rows.length - 1}
                 onEdit={(key, value) => onEditTranche(t.id, key, value)}
                 onCommit={() => onCommitTranche(t.id)}
                 onToggle={() => onToggleFilled(t.id)}
                 onDelete={() => onDeleteTranche(t.id)}
+                onMoveUp={() => onMoveTranche(t.id, "up")}
+                onMoveDown={() => onMoveTranche(t.id, "down")}
               />
             ))}
           </div>
